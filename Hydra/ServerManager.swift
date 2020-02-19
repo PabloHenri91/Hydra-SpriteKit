@@ -106,6 +106,9 @@ class ServerManager: NSObject, MCSessionDelegate, MCNearbyServiceBrowserDelegate
         case .connected: // Peer is connected to the session.
             event = "connected"
             break
+        default:
+            event = "\(state.rawValue)"
+            break
         }
         
         let data = try! JSONSerialization.data(withJSONObject: ["event": event])
@@ -115,7 +118,7 @@ class ServerManager: NSObject, MCSessionDelegate, MCNearbyServiceBrowserDelegate
     // Received data from remote peer.
     func session(_ session: MCSession, didReceive data: Data, fromPeer peerID: MCPeerID){
         
-        var jsonObject = try! JSONSerialization.jsonObject(with: data) as! [String: Any]
+        let jsonObject = try! JSONSerialization.jsonObject(with: data) as! [String: Any]
         let event = jsonObject["event"] as! String
         let items = jsonObject["items"] as Any
         self.anyHandler?(event, peerID, items)

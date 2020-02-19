@@ -70,6 +70,8 @@ class MultiLineLabel: Control {
         case .right:
             x = self.size.width
             break
+        default:
+            break
         }
         for label in labels {
             label.sketchPosition.x = x
