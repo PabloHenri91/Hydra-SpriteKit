@@ -65,7 +65,11 @@ class ScrollNode: Control {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.cells = [Control]()
+        self.scrollDirection = .vertical
+        self.cellIndex = 0
+        self.spacing = 8
+        super.init(coder: aDecoder)
     }
     
     func remove(at index: Int) {

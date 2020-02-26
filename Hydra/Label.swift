@@ -77,7 +77,8 @@ class Label: Control {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        self.shadowLabelNodes = [SKLabelNode]()
+        super.init(coder: aDecoder)
     }
     
     func addShadow(color: SKColor = GameColors.fontWhite, x: Int = 1, y: Int = -1) {
