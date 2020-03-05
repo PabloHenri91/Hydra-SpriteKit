@@ -43,12 +43,12 @@ class SKTAudio {
 
     var error: NSError? = nil
     do {
-      backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url!)
+      self.backgroundMusicPlayer = try AVAudioPlayer(contentsOf: url!)
     } catch let error1 as NSError {
       error = error1
-      backgroundMusicPlayer = nil
+      self.backgroundMusicPlayer = nil
     }
-    if let player = backgroundMusicPlayer {
+    if let player = self.backgroundMusicPlayer {
       player.numberOfLoops = -1
       player.prepareToPlay()
       player.play()

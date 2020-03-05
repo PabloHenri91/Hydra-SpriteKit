@@ -193,7 +193,7 @@ extension SKTexture {
 
 extension SKNode {
     
-    func destroy() {
+    @objc func destroy() {
         
         for node in self.children {
             node.destroy()
