@@ -27,10 +27,7 @@ class GameScene: SKScene {
     private var lastSecond: TimeInterval = 0
     var needMusic = true
     
-    static func current() -> GameScene? {
-        return GameScene.lastInstance
-    }
-    private static weak var lastInstance: GameScene? = nil
+    static weak var current: GameScene? = nil
     
     static var currentTime: TimeInterval = 0
     
@@ -62,7 +59,7 @@ class GameScene: SKScene {
         self.addChild(self.blackSpriteNode)
         self.blackSpriteNode.isHidden = true
         
-        GameScene.lastInstance = self
+        GameScene.current = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -83,7 +80,7 @@ class GameScene: SKScene {
         
         Control.resetPosition()
         
-        GameScene.current()?.updateSize()
+        GameScene.current?.updateSize()
     }
     
     func updateSize() {
@@ -216,7 +213,7 @@ extension UITouch {
     var delta: CGPoint {
         get {
             #if os(iOS) || os(tvOS)
-                return self.previousLocation(in: GameScene.current()!) - self.location(in: GameScene.current()!)
+                return self.previousLocation(in: GameScene.current!) - self.location(in: GameScene.current!)
                 #endif
             
             #if os(OSX)
