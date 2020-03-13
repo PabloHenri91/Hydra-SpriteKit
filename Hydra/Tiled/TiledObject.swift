@@ -15,6 +15,8 @@ class TiledObject: NSObject {
     var type = ""
     var x: CGFloat = 0
     var y: CGFloat = 0
+    var width: CGFloat = 0
+    var height: CGFloat = 0
     
     var attributeDict = [String : String]()
 }

@@ -157,12 +157,16 @@ class TiledMap: SKNode, XMLParserDelegate {
         object.type = self.string(key: "type", from: attributeDict)
         object.x = self.float(key: "x", from: attributeDict)
         object.y = self.float(key: "y", from: attributeDict)
+        object.width = self.float(key: "width", from: attributeDict)
+        object.height = self.float(key: "height", from: attributeDict)
         
         attributeDict["id"] = nil
         attributeDict["name"] = nil
         attributeDict["type"] = nil
         attributeDict["x"] = nil
         attributeDict["y"] = nil
+        attributeDict["width"] = nil
+        attributeDict["height"] = nil
         
         object.attributeDict = attributeDict
         
