@@ -74,9 +74,9 @@ class TiledMap: SKNode, XMLParserDelegate {
     
     func url(forResource name: String?) -> URL? {
         let url = Bundle.main.url(forResource: name, withExtension: "tmx")
-//        if url == nil {
-//             return Bundle.main.url(forResource: "default", withExtension: "tmx")
-//        }
+        if url == nil {
+             return Bundle.main.url(forResource: "default", withExtension: "tmx")
+        }
         return url
     }
     
