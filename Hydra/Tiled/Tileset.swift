@@ -18,10 +18,37 @@ class TiledTileset: SKSpriteNode {
     
     var tileTextures = [SKTexture]()
     
-    init(imageNamed name: String) {
+    static var list = [String: TiledTileset]()
+    
+    static func load(imageNamed name: String, tileWidth: CGFloat, tileHeight: CGFloat) -> TiledTileset {
+        if let tileset = TiledTileset.list[name] {
+            return tileset
+        } else {
+            let tileset = TiledTileset(imageNamed: name)
+            tileset.load(tileWidth: tileWidth, tileHeight: tileHeight)
+            return tileset
+        }
+    }
+    
+    static func load(imageNamed name: String, columns: Int, rows: Int) -> TiledTileset {
+        if let tileset = TiledTileset.list[name] {
+            return tileset
+        } else {
+            let tileset = TiledTileset(imageNamed: name)
+            tileset.load(columns: columns, rows: rows)
+            return tileset
+        }
+    }
+    
+    static func reset() {
+        TiledTileset.list = [String: TiledTileset]()
+    }
+    
+    private init(imageNamed name: String) {
         let texture = SKSpriteNode(imageNamed: name).texture!
         texture.filteringMode = GameScene.defaultFilteringMode
         super.init(texture: texture, color: .white, size: texture.size())
+        TiledTileset.list[name] = self
     }
     
     required init?(coder aDecoder: NSCoder) {

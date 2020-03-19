@@ -119,10 +119,7 @@ class TiledMap: SKNode, XMLParserDelegate {
 //        let tilecount = self.int(key: "tilecount", from: attributeDict)
 //        let columns = self.int(key: "columns", from: attributeDict)
         
-        let tileset = TiledTileset(imageNamed: name)
-        tileset.load(tileWidth: tileWidth, tileHeight: tileHeight)
-        
-        return tileset
+        return TiledTileset.load(imageNamed: name, tileWidth: tileWidth, tileHeight: tileHeight)
     }
     
     func loadLayer(attributeDict: [String : String]) -> TiledLayer {
