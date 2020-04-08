@@ -23,6 +23,11 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    class zPosition {
+        static let blackSpriteNode: CGFloat = 100000
+        static let box: CGFloat = 1000000
+    }
+    
     private var fps = 0
     private var lastSecond: TimeInterval = 0
     var needMusic = true

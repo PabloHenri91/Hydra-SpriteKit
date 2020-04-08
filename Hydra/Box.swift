@@ -42,6 +42,25 @@ class Box: Control {
         super.init(coder: aDecoder)
     }
     
+    func show(gameScene: GameScene) {
+        self.zPosition = GameScene.zPosition.box
+        gameScene.blackSpriteNode.isHidden = false
+        gameScene.blackSpriteNode.zPosition = GameScene.zPosition.blackSpriteNode
+        gameScene.addChild(self)
+        gameScene.blackSpriteNode.removeAllHandlers()
+        gameScene.blackSpriteNode.addHandler { [weak self, weak gameScene] in
+            self?.removeFromParent()
+            gameScene?.blackSpriteNode.isHidden = true
+        }
+    }
+    
+    func remove(hideBlackSpriteNode: Bool = true) {
+        if hideBlackSpriteNode {
+            GameScene.current?.blackSpriteNode.isHidden = true
+        }
+        self.removeFromParent()
+    }
+    
     func alignCenter(x: CGFloat? = nil, y: CGFloat? = nil) {
         if x == nil {
             self.sketchPosition.x = GameScene.sketchSize.width/2 - self.size.width/2
