@@ -19,3 +19,15 @@ class GameColors {
     static var blackSpriteNode = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0.75)
     
 }
+
+extension SKColor {
+    
+    func ciColor() -> CIColor {
+        let color = CIColor(color: self)
+        #if os(OSX)
+            return color!
+        #else
+            return color
+        #endif
+    }
+}
