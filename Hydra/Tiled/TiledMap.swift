@@ -7,6 +7,7 @@
 //
 
 import SpriteKit
+import GameplayKit
 
 class TiledMap: SKNode, XMLParserDelegate {
     
@@ -42,42 +43,54 @@ class TiledMap: SKNode, XMLParserDelegate {
     var layerList = [TiledLayer]()
     var objectGroupList = [TiledObjectGroup]()
     var tiledData = TiledData()
+    var random: GKMersenneTwisterRandomSource!
+    var region = CGPoint.zero
     
     static weak var current: TiledMap?
     
-    init(fileNamed filename: String, x: CGFloat, y: CGFloat, delegate: TiledMapDelegate? = nil) {
+    init(mapType filename: String, x: Int, y: Int, delegate: TiledMapDelegate? = nil) {
         super.init()
-        guard let url = self.url(forResource: filename) else {
+        guard let url = self.url(forResource: "\(filename)_\(x)_\(y)") else {
             return
         }
         guard let parser = XMLParser(contentsOf: url) else {
             return
         }
-        TiledMap.current = self
+        
+        self.updateRegion(x: x, y: y)
+        
         self.delegate = delegate
+        TiledMap.current = self
         parser.delegate = self
         parser.parse()
-        self.position = CGPoint(x: self.size.width * x - self.size.width / 2 + self.tileWidth / 2, y: self.size.height * y + self.size.height / 2 - self.tileWidth / 2)
+        self.updatePosition()
     }
     
-    convenience init(fileNamed filename: String, position: CGPoint?, delegate: TiledMapDelegate? = nil) {
+    convenience init(mapType filename: String, position: CGPoint?, delegate: TiledMapDelegate? = nil) {
         let position = position ?? .zero
-        if position == .zero {
-            
-        }
-        self.init(fileNamed: filename, x: position.x, y:position.y, delegate:delegate)
+        self.init(mapType: filename, x: Int(position.x), y:Int(position.y), delegate:delegate)
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
+    func updateRegion(x: Int, y: Int) {
+        self.region = CGPoint(x: x, y: y)
+        self.random = GKMersenneTwisterRandomSource(seed: UInt64(abs("\(x)_\(y)".hash)))
+    }
+    
+    func updatePosition() {
+        self.position = CGPoint(x: self.size.width * self.region.x - self.size.width / 2 + self.tileWidth / 2, y: self.size.height * self.region.y + self.size.height / 2 - self.tileWidth / 2)
+    }
+    
     func url(forResource name: String?) -> URL? {
         let url = Bundle.main.url(forResource: name, withExtension: "tmx")
         if url == nil {
-             return Bundle.main.url(forResource: "default", withExtension: "tmx")
+            return Bundle.main.url(forResource: "default", withExtension: "tmx")
+        } else {
+            return url
         }
-        return url
     }
     
     func bool(key:String, from attributeDict: [String : String]) -> Bool {
@@ -293,29 +306,41 @@ class TiledMap: SKNode, XMLParserDelegate {
         for y in 0..<Int(map.height) {
             for x in 0..<Int(map.width) {
                 let id = Int(i.next() ?? 0)
-                guard id != 0 else { continue }
-                var tilecount = 0
-                for tileset in self.tilesetList {
-                    let lastTilecount = tilecount
-                    tilecount = tilecount + tileset.tileTextures.count
-                    
-                    if id > lastTilecount && id <= tilecount {
-                        let texture = tileset.tileTextures[id - lastTilecount - 1]
-                        self.addTile(id: id, texture: texture, x: x, y: y)
-                        break
-                    }
+                guard id != 0 else {
+                    self.addTile(id: id, texture: nil, x: x, y: y)
+                    continue
                 }
+                let texture = self.texture(id: id)
+                self.addTile(id: id, texture: texture, x: x, y: y)
             }
         }
     }
     
-    func addTile(id: Int, texture: SKTexture, x: Int, y: Int) {
+    func texture(id: Int) -> SKTexture? {
+        var tilecount = 0
+        for tileset in self.tilesetList {
+            let lastTilecount = tilecount
+            tilecount = tilecount + tileset.tileTextures.count
+            
+            if id > lastTilecount && id <= tilecount {
+                return tileset.tileTextures[id - lastTilecount - 1]
+            }
+        }
+        return nil
+    }
+    
+    func addChild(id: Int, texture: SKTexture?, x: Int, y: Int) {
+        guard let texture = texture else { return }
+        self.addChild(TiledTile(texture: texture, x: x, y: y))
+    }
+    
+    func addTile(id: Int, texture: SKTexture?, x: Int, y: Int) {
         if let delegate = self.delegate {
             if !delegate.addTile(self, id: id, texture: texture, x: x, y: y) {
-                self.addChild(TiledTile(texture: texture, x: x, y: y))
+                self.addChild(id: id, texture: texture, x: x, y: y)
             }
         } else {
-            self.addChild(TiledTile(texture: texture, x: x, y: y))
+            self.addChild(id: id, texture: texture, x: x, y: y)
         }
     }
     
@@ -325,7 +350,7 @@ class TiledMap: SKNode, XMLParserDelegate {
 }
 
 protocol TiledMapDelegate: class {
-    func addTile(_ tiledMap: TiledMap, id: Int, texture: SKTexture, x: Int, y: Int) -> Bool // handled ?
+    func addTile(_ tiledMap: TiledMap, id: Int, texture: SKTexture?, x: Int, y: Int) -> Bool // handled ?
     func addObjectGroup(_ tiledMap: TiledMap, objectGroup: TiledObjectGroup)
 }
 

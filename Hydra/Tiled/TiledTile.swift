@@ -10,8 +10,8 @@ import SpriteKit
 
 class TiledTile: SKSpriteNode {
 
-    init(texture: SKTexture, x: Int, y: Int) {
-        super.init(texture: texture, color: .white, size: texture.size())
+    init(texture: SKTexture?, x: Int, y: Int) {
+        super.init(texture: texture, color: .white, size: texture?.size() ?? CGSize.zero)
         self.position = TiledTile.position(x: x, y: y)
     }
         
